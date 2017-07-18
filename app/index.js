@@ -3,6 +3,7 @@
 var generator = require('yeoman-generator'),
     chalk = require('chalk'),
     yosay = require('yosay'),
+    node_fs = require('fs'),
     includes = function (ary, lib) {
         var val = ary.indexOf(lib);
 
@@ -38,6 +39,11 @@ module.exports = generator.extend({
             name: 'jslibs',
             message: 'Which JS libraries would you like to include?',
             choices: [
+                 {
+                    name: 'Babel Polyfill',
+                    value: 'babelPoly',
+                    checked: false
+                },
                 {
                     name: 'jQuery',
                     value: 'jquery',
@@ -80,6 +86,7 @@ module.exports = generator.extend({
             //self.config.set('appname', answers.projectName);
             // self.config.save();
             
+            self.includeBabelPolyfill = self.includes(answers.jslibs, 'babelPoly');
             self.includeJquery = self.includes(answers.jslibs, 'jquery');
             self.includeLodash = self.includes(answers.jslibs, 'lodash');
             self.includeMoment = self.includes(answers.jslibs, 'momentjs');             
@@ -113,11 +120,12 @@ module.exports = generator.extend({
             packageFile.dependencies.react = 'latest';
             packageFile.dependencies['react-dom'] = 'latest';
             packageFile.dependencies['prop-types'] = 'latest';
-            packageFile.dependencies['react-router'] = 'latest';
+            packageFile.dependencies['react-router-dom'] = 'latest';
             packageFile.dependencies['redux'] = 'latest';
             packageFile.dependencies['react-redux'] = 'latest';
             packageFile.dependencies['react-router-redux'] = 'latest';
             packageFile.dependencies['react-thunk'] = 'latest';
+            if(this.includeBabelPolyfill) {packageFile.dependencies["babel-polyfill"] = "latest";}
             if(this.includeJquery) {packageFile.dependencies["jquery"] = "latest";}
             if(this.includeLodash) {packageFile.dependencies["lodash"] = "latest";}
             if(this.includeMoment) {packageFile.dependencies["moment"] = "latest";}
@@ -141,6 +149,7 @@ module.exports = generator.extend({
             packageFile.devDependencies["gulp-connect"] = "latest";
             packageFile.devDependencies["eslint"] = "latest";
             packageFile.devDependencies["eslint-plugin-react"] = "latest";
+            packageFile.devDependencies["redux-immutable-state-invariant"] = "latest";
 
             this.fs.writeJSON(
                 this.destinationPath('package.json'),
@@ -178,31 +187,31 @@ module.exports = generator.extend({
         },
         scripts: function(){
             this.fs.copyTpl(
-                this.templatePath('app/scripts/_app.js'),
-                this.destinationPath('src/scripts/app.js'),
+                this.templatePath('app/_app/_index.js'),
+                this.destinationPath('src/app/index.js'),
                 {
                     projectName: this.projectName
                     //app: this.config.get('ngappname')
                 }
             );
-            this.fs.copyTpl(
-                this.templatePath('app/scripts/components/_components.jsx'),
-                this.destinationPath('src/scripts/components/components.jsx'),
-                {
-                    projectName: this.projectName
-                    //app: this.config.get('ngappname')
-                }
+            this.fs.copy(
+                this.templatePath('app/_app/appStore/*'),
+                this.destinationPath('src/app/appStore')
+            );
+            this.fs.copy(
+                this.templatePath('app/_app/common/'),
+                this.destinationPath('src/app/common')
+            );
+            this.fs.copy(
+                this.templatePath('app/_app/_rootReducer.js'),
+                this.destinationPath('src/app/rootReducer.js')
+            );
+            this.fs.copy(
+                this.templatePath('app/_app/features/feature1'),
+                this.destinationPath('src/app/features/feature1')
             );
         },
         styleSheets: function() {
-            this.fs.copyTpl(
-                this.templatePath('app/styleSheets/_main.css'),
-                this.destinationPath('src/styleSheets/main.css'),
-                {
-                    projectName: this.projectName
-                    //app: this.config.get('ngappname')
-                }
-            );
         },
         html: function(){
             this.fs.copyTpl(
@@ -218,7 +227,7 @@ module.exports = generator.extend({
     },
     install: function(){
         //this.bowerInstall();
-        this.npmInstall();
+        //this.npmInstall();
     },
     end: function(){
         this.log(chalk.yellow.bold('Installation successful!'));
