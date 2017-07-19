@@ -136,6 +136,7 @@ module.exports = generator.extend({
             
             //devDependencies
             packageFile.devDependencies["webpack"] = "latest";
+            packageFile.devDependencies["webpack-dev-server"] = "latest";
             packageFile.devDependencies["css-loader"] = "latest";
             packageFile.devDependencies["style-loader"] = "latest";
             packageFile.devDependencies["babel-core"] = "latest";
@@ -146,7 +147,6 @@ module.exports = generator.extend({
             packageFile.devDependencies["gulp"] = "latest";
             packageFile.devDependencies["gulp-util"] = "latest";
             packageFile.devDependencies["gulp-spsave"] = "latest";
-            packageFile.devDependencies["gulp-connect"] = "latest";
             packageFile.devDependencies["eslint"] = "latest";
             packageFile.devDependencies["eslint-plugin-react"] = "latest";
             packageFile.devDependencies["redux-immutable-state-invariant"] = "latest";
@@ -167,7 +167,6 @@ module.exports = generator.extend({
             );
         },
         appStaticFiles: function(){
-            // this.copy('_favicon.ico', 'src/favicon.ico');
             this.fs.copy(
                 this.templatePath('.eslintrc.json'),
                 this.destinationPath('.eslintrc.json')
@@ -191,15 +190,14 @@ module.exports = generator.extend({
                 this.destinationPath('src/app/index.js'),
                 {
                     projectName: this.projectName
-                    //app: this.config.get('ngappname')
                 }
             );
             this.fs.copy(
-                this.templatePath('app/_app/appStore/*'),
+                this.templatePath('app/_app/appStore/**'),
                 this.destinationPath('src/app/appStore')
             );
             this.fs.copy(
-                this.templatePath('app/_app/common/'),
+                this.templatePath('app/_app/common/**'),
                 this.destinationPath('src/app/common')
             );
             this.fs.copy(
@@ -207,8 +205,12 @@ module.exports = generator.extend({
                 this.destinationPath('src/app/rootReducer.js')
             );
             this.fs.copy(
-                this.templatePath('app/_app/features/feature1'),
-                this.destinationPath('src/app/features/feature1')
+                this.templatePath('app/_app/features/**'),
+                this.destinationPath('src/app/features/')
+            );
+            this.fs.copy(
+                this.templatePath('app/_app/pages/**'),
+                this.destinationPath('src/app/pages/')
             );
         },
         styleSheets: function() {
@@ -227,7 +229,7 @@ module.exports = generator.extend({
     },
     install: function(){
         //this.bowerInstall();
-        //this.npmInstall();
+        this.npmInstall();
     },
     end: function(){
         this.log(chalk.yellow.bold('Installation successful!'));

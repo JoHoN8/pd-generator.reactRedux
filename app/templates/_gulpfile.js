@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
     gutil = require('gulp-util'),
+    path = require('path'),
     //creds = require(), //path to credintial file
     spsave = require('gulp-spsave'),
     webpack = require('webpack'),
@@ -17,6 +18,7 @@ var gulp = require('gulp'),
 /*********webpack stuff*************************/
 gulp.task('dev', ['webpack:dev', 'copyHTML', 'copyCSS']);
 gulp.task('prod', ['webpack:prod', 'copyHTML', 'copyCSS']);
+gulp.task('server', ['webpack:devServer']);
 gulp.task('saveAll', ['saveScripts', 'saveStyles', 'savePages']);
 
 gulp.task('webpack:prod', function (callback) {
@@ -40,6 +42,25 @@ gulp.task('webpack:prod', function (callback) {
 gulp.task('webpack:dev', function (callback) {
     //custom dev config
     webpackConfig.output.filename = 'app.js';
+
+    webpack(webpackConfig, function (err, stats) {
+        if (err) {
+            throw new gutil.PluginError('webpack:build', err);
+        }
+        gutil.log('developer pack completed');
+        callback();
+    });
+});
+
+gulp.task('webpack:devServer', function (callback) {
+    //custom dev config
+    webpackConfig.output.filename = 'app.js';
+    webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+    webpackConfig.devServer: {
+        hot: true, // Tell the dev-server we're using HMR
+        contentBase: path.resolve(__dirname, 'dist'),
+        publicPath: '/'
+    };
 
     webpack(webpackConfig, function (err, stats) {
         if (err) {
@@ -86,15 +107,4 @@ gulp.task('copyCSS', function () {
 gulp.task('copyHTML', function () {
     gulp.src('./src/index.html')
         .pipe(gulp.dest('./dist'));
-});
-
-/****************server stuff****************************/
-gulp.task('startServer', function () {
-    connect.server({
-        root: './dist',
-        livereload: true
-    });
-});
-gulp.task('stopServer', function () {
-    connect.serverClose();
 });
