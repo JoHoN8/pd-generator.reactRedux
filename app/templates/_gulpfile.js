@@ -5,8 +5,7 @@ var gulp = require('gulp'),
     spsave = require('gulp-spsave'),
     webpack = require('webpack'),
     webpackConfig = require('./webpack.config.js'),
-    packageData = require("./package.json"),
-    connect = require('gulp-connect');
+    packageData = require("./package.json");
 
 
 /************common webpack configs************/
@@ -16,9 +15,8 @@ var gulp = require('gulp'),
  
 
 /*********webpack stuff*************************/
-gulp.task('dev', ['webpack:dev', 'copyHTML', 'copyCSS']);
-gulp.task('prod', ['webpack:prod', 'copyHTML', 'copyCSS']);
-gulp.task('server', ['webpack:devServer']);
+gulp.task('dev', ['webpack:dev', 'copyHTML']);
+gulp.task('prod', ['webpack:prod', 'copyHTML']);
 gulp.task('saveAll', ['saveScripts', 'saveStyles', 'savePages']);
 
 gulp.task('webpack:prod', function (callback) {
@@ -52,37 +50,14 @@ gulp.task('webpack:dev', function (callback) {
     });
 });
 
-gulp.task('webpack:devServer', function (callback) {
-    //custom dev config
-    webpackConfig.output.filename = 'app.js';
-    webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-    webpackConfig.devServer: {
-        hot: true, // Tell the dev-server we're using HMR
-        contentBase: path.resolve(__dirname, 'dist'),
-        publicPath: '/'
-    };
-
-    webpack(webpackConfig, function (err, stats) {
-        if (err) {
-            throw new gutil.PluginError('webpack:build', err);
-        }
-        gutil.log('developer pack completed');
-        callback();
-    });
+gulp.task('copyHTML', function () {
+    gulp.src('./src/index.html')
+        .pipe(gulp.dest('./dist'));
 });
 
 /***************sp save stuff***************************/
 gulp.task('saveScripts', function () {
     return gulp.src("./dist/**/*.js")
-        .pipe(spsave({
-            siteUrl: '', //absolute path to site
-            folder: '', //library/folder
-            flatten: false
-        }, creds));
-});
-
-gulp.task('saveStyles', function () {
-    return gulp.src("./dist/**/*.css")
         .pipe(spsave({
             siteUrl: '', //absolute path to site
             folder: '', //library/folder
@@ -97,14 +72,4 @@ gulp.task('savePages', function () {
             folder: '', //library/folder
             flatten: false
         }, creds));
-});
-
-/*************copy files stuff********************************/
-gulp.task('copyCSS', function () {
-    gulp.src('./src/styleSheets/*')
-        .pipe(gulp.dest('./dist/styleSheets'));
-});
-gulp.task('copyHTML', function () {
-    gulp.src('./src/index.html')
-        .pipe(gulp.dest('./dist'));
 });

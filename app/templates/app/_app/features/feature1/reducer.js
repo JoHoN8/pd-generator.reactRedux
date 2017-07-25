@@ -1,16 +1,17 @@
+/*
+  a reducer should never
+  1. mutate arguments
+  2. perform side effects
+  3. call non-pure functions (api calls and stuff)
+*/
 import t from './actionTypes';
-import type { State } from './model';
+import { initialState } from './model';
 
-const initialState = [{
-  text: 'Use Redux',
-  completed: false,
-  id: 0
-}];
-
-export (state = initialState, action: any): State => {
+export default (state = initialState, action) => {
   switch (action.type) {
-    case t.ADD:
-      return [
-      ];
+    case t.CREATE_COURSE:
+      return Object.assign({}, state, );
+    default:
+      return state;
   }
 };

@@ -1,9 +1,14 @@
-const   path = require('path');
+const   path = require('path'),
+        webpack = require('webpack');
+
 
 module.exports = {
+    //context: path.resolve(__dirname, "app"),
     entry: './src/app/App.js',
     output: {
         path: path.resolve(__dirname, "./dist/app"),
+        filename: 'app.js',
+        publicPath: '/app'
     },
     module:{
         rules:[
@@ -27,18 +32,22 @@ module.exports = {
                     }
                 }
             },
-            ,
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                use: ['file-loader']
+                use: [ 'style-loader', 'file-loader' ]
             }
         ]
     },
     resolve: {
         extensions: [".js", ".jsx", ".css"]
     },
-    plugins: [],
-    externals: {}
+    plugins: [
+        new webpack.HotModuleReplacementPlugin()
+    ],
+    devServer: {
+        hot: true, // Tell the dev-server we're using HMR
+        contentBase: './dist'
+    }
     //devtool: 'source-map'
 };
 

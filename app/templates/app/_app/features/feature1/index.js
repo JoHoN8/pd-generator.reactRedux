@@ -4,9 +4,11 @@
 	through here
 */
 import * as actions from './actions';
-import * as components from './components';
+import * as actionTypes from './actionTypes';
+import * as components from './components/components';
 import * as constants from './constants';
 import reducer from './reducer';
 import * as selectors from './selectors';
+import * as model from './model';
 
-export default { actions, components, constants, reducer, selectors };
+export { actions, actionTypes, model, components, constants, reducer, selectors };

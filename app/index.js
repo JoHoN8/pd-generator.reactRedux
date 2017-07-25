@@ -108,7 +108,7 @@ module.exports = generator.extend({
                 description: this.desc,
                 main: "app.js",
                 scripts: {
-                    test: "echo \"Error: no test specified\" && exit 1"
+                    "devServer": "webpack-dev-server --config ./webpack.server.config.js"
                 },
                 author: this.author,
                 license: "ISC",
@@ -125,6 +125,7 @@ module.exports = generator.extend({
             packageFile.dependencies['react-redux'] = 'latest';
             packageFile.dependencies['react-router-redux'] = 'latest';
             packageFile.dependencies['react-thunk'] = 'latest';
+            packageFile.dependencies["babel-polyfill"] = 'latest';
             if(this.includeBabelPolyfill) {packageFile.dependencies["babel-polyfill"] = "latest";}
             if(this.includeJquery) {packageFile.dependencies["jquery"] = "latest";}
             if(this.includeLodash) {packageFile.dependencies["lodash"] = "latest";}
@@ -176,44 +177,36 @@ module.exports = generator.extend({
                 this.destinationPath('.gitignore')
             );
             this.fs.copy(
-                this.templatePath('babelrc'),
-                this.destinationPath('.babelrc')
-            );
-            this.fs.copy(
                 this.templatePath('webpack.config.js'),
                 this.destinationPath('webpack.config.js')
             );
         },
         scripts: function(){
             this.fs.copyTpl(
-                this.templatePath('app/_app/_index.js'),
-                this.destinationPath('src/app/index.js'),
+                this.templatePath('app/_app/_App.jsx'),
+                this.destinationPath('src/app/App.jsx'),
                 {
                     projectName: this.projectName
                 }
             );
             this.fs.copy(
-                this.templatePath('app/_app/appStore/**'),
-                this.destinationPath('src/app/appStore')
+                this.templatePath('app/_app/redux/**'),
+                this.destinationPath('src/app/redux')
             );
             this.fs.copy(
                 this.templatePath('app/_app/common/**'),
                 this.destinationPath('src/app/common')
             );
             this.fs.copy(
-                this.templatePath('app/_app/_rootReducer.js'),
-                this.destinationPath('src/app/rootReducer.js')
-            );
-            this.fs.copy(
                 this.templatePath('app/_app/features/**'),
                 this.destinationPath('src/app/features/')
             );
-            this.fs.copy(
-                this.templatePath('app/_app/pages/**'),
-                this.destinationPath('src/app/pages/')
-            );
         },
         styleSheets: function() {
+            this.fs.copy(
+                this.templatePath('app/_app/globalStyles/**'),
+                this.destinationPath('src/app/globalStyles/')
+            );
         },
         html: function(){
             this.fs.copyTpl(
